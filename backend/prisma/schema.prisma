@@ -1,0 +1,277 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Room {
+  id          Int      @id @default(autoincrement())
+  name        String
+  theme       String
+  description String?
+  capacity    Int
+  difficulty  Int      @default(3)
+  duration    Int      @default(60)
+  imageUrl    String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  sessionTemplates SessionTemplate[]
+  sessions         Session[]
+}
+
+model SessionTemplate {
+  id          Int      @id @default(autoincrement())
+  roomId      Int
+  name        String
+  startTime   String
+  endTime     String
+  price       Float
+  weekdays    String
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  room     Room      @relation(fields: [roomId], references: [id])
+  sessions Session[]
+}
+
+model Session {
+  id           Int       @id @default(autoincrement())
+  roomId       Int
+  templateId   Int?
+  sessionDate  DateTime
+  startTime    String
+  endTime      String
+  price        Float
+  bookedCount  Int       @default(0)
+  maxCapacity  Int
+  status       String    @default("available")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  room           Room             @relation(fields: [roomId], references: [id])
+  template       SessionTemplate? @relation(fields: [templateId], references: [id])
+  bookings       Booking[]
+  npcAssignments NpcAssignment[]
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  openid    String?  @unique
+  phone     String?  @unique
+  nickname  String?
+  avatarUrl String?
+  userType  String   @default("customer")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  bookings Booking[]
+  orders   Order[]
+}
+
+model Employee {
+  id         Int      @id @default(autoincrement())
+  name       String
+  phone      String   @unique
+  idCard     String?
+  position   String
+  baseSalary Float
+  hireDate   DateTime
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  shifts            Shift[]
+  npcAssignments    NpcAssignment[]
+  attendanceRecords AttendanceRecord[]
+  payrolls          Payroll[]
+}
+
+model Shift {
+  id         Int      @id @default(autoincrement())
+  employeeId Int
+  shiftDate  DateTime
+  shiftType  String
+  startTime  String
+  endTime    String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  employee   Employee     @relation(fields: [employeeId], references: [id])
+  snackSales SnackSale[]
+}
+
+model NpcAssignment {
+  id         Int      @id @default(autoincrement())
+  sessionId  Int
+  employeeId Int
+  role       String?
+  createdAt  DateTime @default(now())
+
+  session  Session  @relation(fields: [sessionId], references: [id])
+  employee Employee @relation(fields: [employeeId], references: [id])
+}
+
+model Booking {
+  id          Int      @id @default(autoincrement())
+  bookingNo   String   @unique
+  userId      Int
+  sessionId   Int
+  playerCount Int
+  bookingType String
+  totalAmount Float
+  status      String   @default("pending")
+  qrCode      String?
+  paidAt      DateTime?
+  checkedInAt DateTime?
+  checkedInBy Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user    User     @relation(fields: [userId], references: [id])
+  session Session  @relation(fields: [sessionId], references: [id])
+  order   Order?
+  players Player[]
+}
+
+model Player {
+  id        Int      @id @default(autoincrement())
+  bookingId Int
+  name      String
+  phone     String?
+  idCard    String?
+  createdAt DateTime @default(now())
+
+  booking Booking @relation(fields: [bookingId], references: [id])
+}
+
+model Order {
+  id          Int      @id @default(autoincrement())
+  orderNo     String   @unique
+  userId      Int
+  bookingId   Int?     @unique
+  orderType   String
+  totalAmount Float
+  payMethod   String?
+  status      String   @default("pending")
+  paidAt      DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user    User        @relation(fields: [userId], references: [id])
+  booking Booking?    @relation(fields: [bookingId], references: [id])
+  items   OrderItem[]
+}
+
+model OrderItem {
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  itemType  String
+  itemName  String
+  quantity  Int
+  unitPrice Float
+  subtotal  Float
+  createdAt DateTime @default(now())
+
+  order Order @relation(fields: [orderId], references: [id])
+}
+
+model Snack {
+  id        Int      @id @default(autoincrement())
+  name      String
+  category  String
+  price     Float
+  stock     Int      @default(0)
+  imageUrl  String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  snackSales SnackSaleItem[]
+}
+
+model SnackSale {
+  id          Int      @id @default(autoincrement())
+  saleNo      String   @unique
+  shiftId     Int
+  totalAmount Float
+  commission  Float    @default(0)
+  createdAt   DateTime @default(now())
+
+  shift Shift           @relation(fields: [shiftId], references: [id])
+  items SnackSaleItem[]
+}
+
+model SnackSaleItem {
+  id          Int      @id @default(autoincrement())
+  snackSaleId Int
+  snackId     Int
+  quantity    Int
+  unitPrice   Float
+  subtotal    Float
+  createdAt   DateTime @default(now())
+
+  snackSale SnackSale @relation(fields: [snackSaleId], references: [id])
+  snack     Snack     @relation(fields: [snackId], references: [id])
+}
+
+model AttendanceRecord {
+  id           Int      @id @default(autoincrement())
+  employeeId   Int
+  recordDate   DateTime
+  checkInTime  DateTime?
+  checkOutTime DateTime?
+  status       String
+  remark       String?
+  createdAt    DateTime @default(now())
+
+  employee Employee @relation(fields: [employeeId], references: [id])
+}
+
+model Payroll {
+  id               Int      @id @default(autoincrement())
+  employeeId       Int
+  month            String
+  baseSalary       Float
+  ticketCommission Float    @default(0)
+  npcBonus         Float    @default(0)
+  snackCommission  Float    @default(0)
+  attendanceBonus  Float    @default(0)
+  deductions       Float    @default(0)
+  otherBonus       Float    @default(0)
+  totalAmount      Float
+  status           String   @default("draft")
+  remark           String?
+  lockedAt         DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  employee Employee @relation(fields: [employeeId], references: [id])
+}
+
+model CommissionRule {
+  id          Int      @id @default(autoincrement())
+  ruleType    String
+  name        String
+  rate        Float
+  fixedAmount Float    @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AttendanceRule {
+  id          Int      @id @default(autoincrement())
+  name        String
+  fullDays    Int
+  bonusAmount Float
+  latePenalty Float    @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

@@ -1,0 +1,142 @@
+.order-detail {
+  min-height: 100vh;
+  background: #f5f5f5;
+  padding: 20px;
+  padding-bottom: 120px;
+}
+
+.status-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  padding: 60px 30px;
+  text-align: center;
+  margin-bottom: 20px;
+  
+  .status-icon {
+    display: block;
+    font-size: 80px;
+    margin-bottom: 20px;
+  }
+  
+  .status-text {
+    display: block;
+    font-size: 36px;
+    font-weight: bold;
+    color: #fff;
+  }
+}
+
+.qrcode-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 40px 30px;
+  margin-bottom: 20px;
+  text-align: center;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  
+  .qrcode-box {
+    .qrcode-text {
+      display: block;
+      font-size: 120px;
+      margin-bottom: 20px;
+    }
+    
+    .qrcode-hint {
+      display: block;
+      font-size: 26px;
+      color: #666;
+      margin-bottom: 20px;
+    }
+    
+    .booking-code {
+      font-size: 32px;
+      font-weight: bold;
+      color: #333;
+      letter-spacing: 4px;
+    }
+  }
+}
+
+.info-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 30px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  
+  .card-title {
+    font-size: 32px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  
+  .info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 0;
+    
+    .label {
+      font-size: 28px;
+      color: #666;
+    }
+    
+    .value {
+      font-size: 28px;
+      color: #333;
+    }
+    
+    &.total {
+      padding-top: 20px;
+      margin-top: 10px;
+      border-top: 1px solid #f0f0f0;
+      
+      .label {
+        font-weight: bold;
+      }
+      
+      .total-value {
+        font-size: 36px;
+        font-weight: bold;
+        color: #ff6b6b;
+      }
+    }
+  }
+  
+  .player-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    font-size: 28px;
+    color: #333;
+    
+    .phone {
+      color: #666;
+    }
+  }
+}
+
+.action-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  padding: 20px 30px;
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
+  
+  .cancel-btn {
+    width: 100%;
+    background: #fff;
+    color: #ff4d4f;
+    border: 2px solid #ff4d4f;
+    border-radius: 40px;
+    padding: 20px;
+    font-size: 28px;
+    font-weight: 500;
+  }
+}

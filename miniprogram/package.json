@@ -1,0 +1,48 @@
+{
+  "name": "escape-room-miniprogram",
+  "version": "1.0.0",
+  "private": true,
+  "description": "密室逃脱用户小程序",
+  "templateInfo": {
+    "name": "default",
+    "typescript": false,
+    "css": "sass"
+  },
+  "scripts": {
+    "build:weapp": "taro build --type weapp",
+    "dev:weapp": "taro build --type weapp --watch",
+    "build:h5": "taro build --type h5",
+    "dev:h5": "taro build --type h5 --watch"
+  },
+  "browserslist": [
+    "last 3 versions",
+    "Android >= 4.1",
+    "ios >= 8"
+  ],
+  "author": "",
+  "dependencies": {
+    "@tarojs/components": "3.6.25",
+    "@tarojs/helper": "3.6.25",
+    "@tarojs/plugin-framework-react": "3.6.25",
+    "@tarojs/plugin-platform-h5": "3.6.25",
+    "@tarojs/plugin-platform-weapp": "3.6.25",
+    "@tarojs/react": "3.6.25",
+    "@tarojs/runtime": "3.6.25",
+    "@tarojs/shared": "3.6.25",
+    "@tarojs/taro": "3.6.25",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "axios": "^1.6.2",
+    "dayjs": "^1.11.10"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.23.0",
+    "@tarojs/cli": "3.6.25",
+    "@tarojs/webpack5-runner": "3.6.25",
+    "@types/react": "^18.2.0",
+    "babel-preset-taro": "3.6.25",
+    "sass": "^1.69.0",
+    "sass-loader": "^13.3.0",
+    "webpack": "5.89.0"
+  }
+}
