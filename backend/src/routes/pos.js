@@ -106,9 +106,23 @@ router.get('/today-summary', asyncHandler(async (req, res) => {
     },
   });
 
+  const todayRefunds = await prisma.refundRecord.findMany({
+    where: {
+      createdAt: { gte: today, lt: tomorrow },
+    },
+  });
+
+  const todayReschedules = await prisma.rescheduleRecord.findMany({
+    where: {
+      createdAt: { gte: today, lt: tomorrow },
+    },
+  });
+
   const totalSnackRevenue = snackSales.reduce((sum, s) => sum + parseFloat(s.totalAmount), 0);
   const totalSnackCommission = snackSales.reduce((sum, s) => sum + parseFloat(s.commission), 0);
   const totalTicketRevenue = todayBookings.reduce((sum, b) => sum + parseFloat(b.totalAmount), 0);
+  const totalRefund = todayRefunds.reduce((sum, r) => sum + parseFloat(r.refundAmount), 0);
+  const totalServiceFee = todayRefunds.reduce((sum, r) => sum + parseFloat(r.serviceFee), 0);
 
   res.json({
     date: today,
@@ -117,9 +131,14 @@ router.get('/today-summary', asyncHandler(async (req, res) => {
     totalSnackRevenue,
     totalSnackCommission,
     totalTicketRevenue,
-    totalRevenue: totalSnackRevenue + totalTicketRevenue,
+    totalRefund,
+    totalServiceFee,
+    netTicketRevenue: totalTicketRevenue - totalRefund,
+    totalRevenue: totalSnackRevenue + totalTicketRevenue - totalRefund,
     checkInCount: checkedInBookings.length,
-    bookingCount: todayBookings.length,
+    bookingCount: todayBookings.filter(b => b.status !== 'cancelled' && b.status !== 'refunded').length,
+    refundCount: todayRefunds.length,
+    rescheduleCount: todayReschedules.length,
   });
 }));
 

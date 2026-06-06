@@ -77,6 +77,14 @@ async function main() {
     data: { name: '全勤奖', fullDays: 26, bonusAmount: 300, latePenalty: 20 },
   });
 
+  await prisma.refundRule.createMany({
+    data: [
+      { name: '开场前24小时以上', minHours: 24, maxHours: null, refundRate: 100, description: '全额退款' },
+      { name: '开场前2-24小时', minHours: 2, maxHours: 24, refundRate: 50, description: '退款50%' },
+      { name: '开场前2小时以内', minHours: 0, maxHours: 2, refundRate: 0, description: '不予退款' },
+    ],
+  });
+
   console.log('Seed data created successfully!');
 }
 

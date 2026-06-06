@@ -128,9 +128,12 @@
   background: #fff;
   padding: 20px 30px;
   box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
-  
-  .cancel-btn {
-    width: 100%;
+  display: flex;
+  gap: 20px;
+
+  .cancel-btn,
+  .refund-btn {
+    flex: 1;
     background: #fff;
     color: #ff4d4f;
     border: 2px solid #ff4d4f;
@@ -138,5 +141,138 @@
     padding: 20px;
     font-size: 28px;
     font-weight: 500;
+  }
+
+  .reschedule-btn {
+    flex: 1;
+    background: #1890ff;
+    color: #fff;
+    border: none;
+    border-radius: 40px;
+    padding: 20px;
+    font-size: 28px;
+    font-weight: 500;
+  }
+}
+
+.refund-hint {
+  background: #fffbe6 !important;
+  border: 1px solid #ffe58f;
+
+  .hint-title {
+    display: block;
+    font-size: 28px;
+    font-weight: bold;
+    color: #d48806;
+    margin-bottom: 12px;
+  }
+
+  .hint-text {
+    display: block;
+    font-size: 26px;
+    color: #ad6800;
+    line-height: 1.6;
+  }
+}
+
+.refund-card {
+  .refund-text {
+    color: #ff4d4f;
+    font-weight: bold;
+  }
+}
+
+.modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.modal-content {
+  width: 100%;
+  max-height: 80vh;
+  background: #fff;
+  border-radius: 20px 20px 0 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30px;
+  border-bottom: 1px solid #f0f0f0;
+
+  .modal-title {
+    font-size: 32px;
+    font-weight: bold;
+    color: #333;
+  }
+
+  .modal-close {
+    font-size: 36px;
+    color: #999;
+    padding: 10px;
+  }
+}
+
+.modal-body {
+  flex: 1;
+  padding: 20px;
+  max-height: 60vh;
+}
+
+.empty-tip {
+  text-align: center;
+  padding: 60px 0;
+  color: #999;
+  font-size: 28px;
+}
+
+.session-item {
+  background: #f9f9f9;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 16px;
+  border: 2px solid transparent;
+
+  &.selected {
+    border-color: #1890ff;
+    background: #e6f7ff;
+  }
+
+  .session-room {
+    font-size: 30px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 8px;
+  }
+
+  .session-time {
+    font-size: 26px;
+    color: #666;
+    margin-bottom: 8px;
+  }
+
+  .session-price {
+    font-size: 28px;
+    color: #ff6b6b;
+    font-weight: bold;
+    display: inline-block;
+    margin-right: 20px;
+  }
+
+  .session-seats {
+    font-size: 24px;
+    color: #999;
+    display: inline-block;
   }
 }

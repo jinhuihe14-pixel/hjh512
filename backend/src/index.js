@@ -20,6 +20,7 @@ const snackRoutes = require('./routes/snacks');
 const posRoutes = require('./routes/pos');
 const payrollRoutes = require('./routes/payroll');
 const statsRoutes = require('./routes/stats');
+const refundRescheduleRoutes = require('./routes/refundReschedule');
 
 app.use('/api/rooms', roomRoutes);
 app.use('/api/sessions', sessionRoutes);
@@ -29,6 +30,7 @@ app.use('/api/snacks', snackRoutes);
 app.use('/api/pos', posRoutes);
 app.use('/api/payroll', payrollRoutes);
 app.use('/api/stats', statsRoutes);
+app.use('/api/refund-reschedule', refundRescheduleRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

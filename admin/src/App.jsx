@@ -9,6 +9,8 @@ import {
   DollarOutlined,
   BarChartOutlined,
   SettingOutlined,
+  RollbackOutlined,
+  FundOutlined,
 } from '@ant-design/icons';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import Dashboard from './pages/Dashboard.jsx';
@@ -19,6 +21,8 @@ import EmployeeManagement from './pages/EmployeeManagement.jsx';
 import SnackManagement from './pages/SnackManagement.jsx';
 import PayrollManagement from './pages/PayrollManagement.jsx';
 import Statistics from './pages/Statistics.jsx';
+import RefundRescheduleRecords from './pages/RefundRescheduleRecords.jsx';
+import RefundRuleManagement from './pages/RefundRuleManagement.jsx';
 
 const { Header, Content, Sider } = Layout;
 
@@ -71,6 +75,16 @@ function App() {
       icon: <BarChartOutlined />,
       label: '数据分析',
     },
+    {
+      key: '/refund-records',
+      icon: <RollbackOutlined />,
+      label: '退票改签记录',
+    },
+    {
+      key: '/refund-rules',
+      icon: <FundOutlined />,
+      label: '退款规则配置',
+    },
   ];
 
   return (
@@ -117,6 +131,8 @@ function App() {
             <Route path="/snacks" element={<SnackManagement />} />
             <Route path="/payroll" element={<PayrollManagement />} />
             <Route path="/statistics" element={<Statistics />} />
+            <Route path="/refund-records" element={<RefundRescheduleRecords />} />
+            <Route path="/refund-rules" element={<RefundRuleManagement />} />
           </Routes>
         </Content>
       </Layout>

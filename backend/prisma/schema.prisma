@@ -58,6 +58,8 @@ model Session {
   template       SessionTemplate? @relation(fields: [templateId], references: [id])
   bookings       Booking[]
   npcAssignments NpcAssignment[]
+  oldReschedules RescheduleRecord[] @relation("OldSession")
+  newReschedules RescheduleRecord[] @relation("NewSession")
 }
 
 model User {
@@ -70,8 +72,10 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  bookings Booking[]
-  orders   Order[]
+  bookings          Booking[]
+  orders            Order[]
+  refundRecords     RefundRecord[]
+  rescheduleRecords RescheduleRecord[]
 }
 
 model Employee {
@@ -90,6 +94,8 @@ model Employee {
   npcAssignments    NpcAssignment[]
   attendanceRecords AttendanceRecord[]
   payrolls          Payroll[]
+  refundRecords     RefundRecord[]
+  rescheduleRecords RescheduleRecord[]
 }
 
 model Shift {
@@ -133,10 +139,12 @@ model Booking {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  user    User     @relation(fields: [userId], references: [id])
-  session Session  @relation(fields: [sessionId], references: [id])
-  order   Order?
-  players Player[]
+  user              User               @relation(fields: [userId], references: [id])
+  session           Session            @relation(fields: [sessionId], references: [id])
+  order             Order?
+  players           Player[]
+  refundRecords     RefundRecord[]
+  rescheduleRecords RescheduleRecord[]
 }
 
 model Player {
@@ -274,4 +282,61 @@ model AttendanceRule {
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model RefundRule {
+  id          Int      @id @default(autoincrement())
+  name        String
+  minHours    Float
+  maxHours    Float?
+  refundRate  Float
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model RefundRecord {
+  id             Int       @id @default(autoincrement())
+  refundNo       String    @unique
+  bookingId      Int
+  userId         Int
+  employeeId     Int?
+  refundAmount   Float
+  serviceFee     Float
+  originalAmount Float
+  refundType     String
+  reason         String?
+  operatorType   String
+  operatorId     Int?
+  status         String    @default("completed")
+  createdAt      DateTime  @default(now())
+
+  booking  Booking   @relation(fields: [bookingId], references: [id])
+  user     User      @relation(fields: [userId], references: [id])
+  employee Employee? @relation(fields: [employeeId], references: [id])
+}
+
+model RescheduleRecord {
+  id               Int       @id @default(autoincrement())
+  rescheduleNo     String    @unique
+  bookingId        Int
+  userId           Int
+  employeeId       Int?
+  oldSessionId     Int
+  newSessionId     Int
+  oldPrice         Float
+  newPrice         Float
+  priceDifference  Float
+  playerCount      Int
+  operatorType     String
+  operatorId       Int?
+  status           String    @default("completed")
+  createdAt        DateTime  @default(now())
+
+  booking    Booking   @relation(fields: [bookingId], references: [id])
+  user       User      @relation(fields: [userId], references: [id])
+  employee   Employee? @relation(fields: [employeeId], references: [id])
+  oldSession Session   @relation("OldSession", fields: [oldSessionId], references: [id])
+  newSession Session   @relation("NewSession", fields: [newSessionId], references: [id])
 }

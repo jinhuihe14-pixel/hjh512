@@ -70,10 +70,29 @@ router.get('/calculate', asyncHandler(async (req, res) => {
       },
     });
 
-    const ticketSalesTotal = shifts.length * 1000;
+    const checkedInBookings = await prisma.booking.findMany({
+      where: {
+        checkedInBy: employee.id,
+        checkedInAt: { gte: startDate, lte: endDate },
+        status: { notIn: ['cancelled', 'refunded'] },
+      },
+    });
+
+    const refundedBookings = await prisma.booking.findMany({
+      where: {
+        checkedInBy: employee.id,
+        checkedInAt: { gte: startDate, lte: endDate },
+        status: 'refunded',
+      },
+      include: { refundRecords: true },
+    });
+
+    const ticketSalesTotal = checkedInBookings.reduce((sum, b) => sum + parseFloat(b.totalAmount), 0);
+    const refundedAmount = refundedBookings.reduce((sum, b) => sum + parseFloat(b.totalAmount), 0);
+    const netTicketSales = ticketSalesTotal - refundedAmount;
 
     const ticketCommission = employee.position === '前台'
-      ? ticketSalesTotal * (parseFloat(ticketCommissionRule?.rate || 0) / 100)
+      ? Math.max(0, netTicketSales * (parseFloat(ticketCommissionRule?.rate || 0) / 100))
       : 0;
 
     const npcBonus = employee.position === 'NPC'
@@ -108,6 +127,9 @@ router.get('/calculate', asyncHandler(async (req, res) => {
       month,
       baseSalary: parseFloat(employee.baseSalary),
       ticketCommission,
+      ticketSalesTotal,
+      refundedAmount,
+      netTicketSales,
       npcBonus,
       npcCount,
       snackCommission,
@@ -227,8 +249,28 @@ async function getPayrollCalculations(month) {
       where: { employeeId: employee.id, recordDate: { gte: startDate, lte: endDate } },
     });
 
+    const checkedInBookings = await prisma.booking.findMany({
+      where: {
+        checkedInBy: employee.id,
+        checkedInAt: { gte: startDate, lte: endDate },
+        status: { notIn: ['cancelled', 'refunded'] },
+      },
+    });
+
+    const refundedBookings = await prisma.booking.findMany({
+      where: {
+        checkedInBy: employee.id,
+        checkedInAt: { gte: startDate, lte: endDate },
+        status: 'refunded',
+      },
+    });
+
+    const ticketSalesTotal = checkedInBookings.reduce((sum, b) => sum + parseFloat(b.totalAmount), 0);
+    const refundedAmount = refundedBookings.reduce((sum, b) => sum + parseFloat(b.totalAmount), 0);
+    const netTicketSales = ticketSalesTotal - refundedAmount;
+
     const ticketCommission = employee.position === '前台'
-      ? shifts.length * 1000 * (parseFloat(ticketCommissionRule?.rate || 0) / 100)
+      ? Math.max(0, netTicketSales * (parseFloat(ticketCommissionRule?.rate || 0) / 100))
       : 0;
 
     const npcBonus = employee.position === 'NPC'
@@ -263,6 +305,9 @@ async function getPayrollCalculations(month) {
       month,
       baseSalary: parseFloat(employee.baseSalary),
       ticketCommission,
+      ticketSalesTotal,
+      refundedAmount,
+      netTicketSales,
       npcBonus,
       npcCount,
       snackCommission,
