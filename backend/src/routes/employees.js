@@ -1,9 +1,10 @@
 const express = require('express');
 const { prisma } = require('../prisma');
 const dayjs = require('dayjs');
+const asyncHandler = require('../utils/asyncHandler');
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+router.get('/', asyncHandler(async (req, res) => {
   const { position, isActive } = req.query;
   const where = {};
   if (position) where.position = position;
@@ -16,9 +17,9 @@ router.get('/', async (req, res) => {
     },
   });
   res.json(employees);
-});
+}));
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', asyncHandler(async (req, res) => {
   const employee = await prisma.employee.findUnique({
     where: { id: parseInt(req.params.id) },
     include: {
@@ -29,9 +30,9 @@ router.get('/:id', async (req, res) => {
   });
   if (!employee) return res.status(404).json({ error: '员工不存在' });
   res.json(employee);
-});
+}));
 
-router.post('/', async (req, res) => {
+router.post('/', asyncHandler(async (req, res) => {
   const employee = await prisma.employee.create({
     data: {
       name: req.body.name,
@@ -43,9 +44,9 @@ router.post('/', async (req, res) => {
     },
   });
   res.status(201).json(employee);
-});
+}));
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', asyncHandler(async (req, res) => {
   const data = { ...req.body };
   if (data.baseSalary) data.baseSalary = parseFloat(data.baseSalary);
   if (data.hireDate) data.hireDate = new Date(data.hireDate);
@@ -55,17 +56,17 @@ router.put('/:id', async (req, res) => {
     data,
   });
   res.json(employee);
-});
+}));
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', asyncHandler(async (req, res) => {
   await prisma.employee.update({
     where: { id: parseInt(req.params.id) },
     data: { isActive: false },
   });
   res.json({ message: '已停用' });
-});
+}));
 
-router.get('/:id/shifts', async (req, res) => {
+router.get('/:id/shifts', asyncHandler(async (req, res) => {
   const { month } = req.query;
   const where = { employeeId: parseInt(req.params.id) };
   
@@ -81,9 +82,9 @@ router.get('/:id/shifts', async (req, res) => {
     orderBy: { shiftDate: 'desc' },
   });
   res.json(shifts);
-});
+}));
 
-router.post('/shifts', async (req, res) => {
+router.post('/shifts', asyncHandler(async (req, res) => {
   const { employeeId, shiftDate, shiftType, startTime, endTime } = req.body;
   const shift = await prisma.shift.create({
     data: {
@@ -95,9 +96,9 @@ router.post('/shifts', async (req, res) => {
     },
   });
   res.status(201).json(shift);
-});
+}));
 
-router.get('/:id/attendance', async (req, res) => {
+router.get('/:id/attendance', asyncHandler(async (req, res) => {
   const { month } = req.query;
   const where = { employeeId: parseInt(req.params.id) };
   
@@ -112,9 +113,9 @@ router.get('/:id/attendance', async (req, res) => {
     orderBy: { recordDate: 'desc' },
   });
   res.json(records);
-});
+}));
 
-router.post('/attendance', async (req, res) => {
+router.post('/attendance', asyncHandler(async (req, res) => {
   const { employeeId, recordDate, type } = req.body;
   const date = dayjs(recordDate).startOf('day').toDate();
   const now = new Date();
@@ -146,6 +147,6 @@ router.post('/attendance', async (req, res) => {
   }
 
   res.json(record);
-});
+}));
 
 module.exports = router;

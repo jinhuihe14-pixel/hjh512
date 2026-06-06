@@ -2,9 +2,10 @@ const express = require('express');
 const { prisma } = require('../prisma');
 const { v4: uuidv4 } = require('uuid');
 const QRCode = require('qrcode');
+const asyncHandler = require('../utils/asyncHandler');
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+router.get('/', asyncHandler(async (req, res) => {
   const { userId, status, date } = req.query;
   const where = {};
   if (userId) where.userId = parseInt(userId);
@@ -21,9 +22,9 @@ router.get('/', async (req, res) => {
     take: 100,
   });
   res.json(bookings);
-});
+}));
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', asyncHandler(async (req, res) => {
   const booking = await prisma.booking.findUnique({
     where: { id: parseInt(req.params.id) },
     include: {
@@ -34,18 +35,18 @@ router.get('/:id', async (req, res) => {
   });
   if (!booking) return res.status(404).json({ error: '预约不存在' });
   res.json(booking);
-});
+}));
 
-router.get('/qrcode/:bookingNo', async (req, res) => {
+router.get('/qrcode/:bookingNo', asyncHandler(async (req, res) => {
   const booking = await prisma.booking.findUnique({
     where: { bookingNo: req.params.bookingNo },
     include: { session: { include: { room: true } } },
   });
   if (!booking) return res.status(404).json({ error: '预约不存在' });
   res.json(booking);
-});
+}));
 
-router.post('/', async (req, res) => {
+router.post('/', asyncHandler(async (req, res) => {
   const { sessionId, playerCount, bookingType, userId, players, phone } = req.body;
 
   const session = await prisma.session.findUnique({ where: { id: parseInt(sessionId) } });
@@ -100,9 +101,9 @@ router.post('/', async (req, res) => {
   });
 
   res.status(201).json(booking);
-});
+}));
 
-router.post('/:id/checkin', async (req, res) => {
+router.post('/:id/checkin', asyncHandler(async (req, res) => {
   const { employeeId } = req.body;
   const booking = await prisma.booking.update({
     where: { id: parseInt(req.params.id) },
@@ -114,9 +115,9 @@ router.post('/:id/checkin', async (req, res) => {
     include: { session: { include: { room: true } }, user: true },
   });
   res.json(booking);
-});
+}));
 
-router.post('/:id/cancel', async (req, res) => {
+router.post('/:id/cancel', asyncHandler(async (req, res) => {
   const booking = await prisma.booking.findUnique({
     where: { id: parseInt(req.params.id) },
   });
@@ -133,6 +134,6 @@ router.post('/:id/cancel', async (req, res) => {
   });
 
   res.json({ message: '取消成功' });
-});
+}));
 
 module.exports = router;

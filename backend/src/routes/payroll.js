@@ -1,17 +1,18 @@
 const express = require('express');
 const { prisma } = require('../prisma');
 const dayjs = require('dayjs');
+const asyncHandler = require('../utils/asyncHandler');
 const router = express.Router();
 
-router.get('/rules', async (req, res) => {
+router.get('/rules', asyncHandler(async (req, res) => {
   const [commissionRules, attendanceRules] = await Promise.all([
     prisma.commissionRule.findMany({ where: { isActive: true } }),
     prisma.attendanceRule.findMany({ where: { isActive: true } }),
   ]);
   res.json({ commissionRules, attendanceRules });
-});
+}));
 
-router.get('/', async (req, res) => {
+router.get('/', asyncHandler(async (req, res) => {
   const { month, employeeId } = req.query;
   const where = {};
   if (month) where.month = month;
@@ -23,9 +24,9 @@ router.get('/', async (req, res) => {
     orderBy: { month: 'desc' },
   });
   res.json(payrolls);
-});
+}));
 
-router.get('/calculate', async (req, res) => {
+router.get('/calculate', asyncHandler(async (req, res) => {
   const { month } = req.query;
   if (!month) return res.status(400).json({ error: '请指定月份' });
 
@@ -119,9 +120,9 @@ router.get('/calculate', async (req, res) => {
   }
 
   res.json(results);
-});
+}));
 
-router.post('/generate', async (req, res) => {
+router.post('/generate', asyncHandler(async (req, res) => {
   const { month } = req.body;
   const calculations = await getPayrollCalculations(month);
 
@@ -154,9 +155,9 @@ router.post('/generate', async (req, res) => {
   }
 
   res.json(payrolls);
-});
+}));
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', asyncHandler(async (req, res) => {
   const { otherBonus, deductions, remark } = req.body;
 
   const payroll = await prisma.payroll.findUnique({
@@ -183,9 +184,9 @@ router.put('/:id', async (req, res) => {
   });
 
   res.json(updated);
-});
+}));
 
-router.post('/:id/lock', async (req, res) => {
+router.post('/:id/lock', asyncHandler(async (req, res) => {
   const payroll = await prisma.payroll.update({
     where: { id: parseInt(req.params.id) },
     data: {
@@ -195,7 +196,7 @@ router.post('/:id/lock', async (req, res) => {
     include: { employee: true },
   });
   res.json(payroll);
-});
+}));
 
 async function getPayrollCalculations(month) {
   const startDate = dayjs(month).startOf('month').toDate();

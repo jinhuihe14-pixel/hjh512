@@ -1,9 +1,10 @@
 const express = require('express');
 const { prisma } = require('../prisma');
 const dayjs = require('dayjs');
+const asyncHandler = require('../utils/asyncHandler');
 const router = express.Router();
 
-router.get('/overview', async (req, res) => {
+router.get('/overview', asyncHandler(async (req, res) => {
   const { startDate, endDate } = req.query;
   const start = startDate ? new Date(startDate) : dayjs().subtract(30, 'day').toDate();
   const end = endDate ? new Date(endDate) : new Date();
@@ -52,9 +53,9 @@ router.get('/overview', async (req, res) => {
     snackSalesCount: snackSales.length,
     roomStats: Object.values(roomStats),
   });
-});
+}));
 
-router.get('/room-revenue', async (req, res) => {
+router.get('/room-revenue', asyncHandler(async (req, res) => {
   const { startDate, endDate } = req.query;
   const start = startDate ? new Date(startDate) : dayjs().startOf('month').toDate();
   const end = endDate ? new Date(endDate) : new Date();
@@ -82,9 +83,9 @@ router.get('/room-revenue', async (req, res) => {
   });
 
   res.json(Object.values(roomRevenue));
-});
+}));
 
-router.get('/daily-trend', async (req, res) => {
+router.get('/daily-trend', asyncHandler(async (req, res) => {
   const { days = 30 } = req.query;
   const data = [];
 
@@ -117,9 +118,9 @@ router.get('/daily-trend', async (req, res) => {
   }
 
   res.json(data);
-});
+}));
 
-router.get('/monthly-comparison', async (req, res) => {
+router.get('/monthly-comparison', asyncHandler(async (req, res) => {
   const months = [];
   for (let i = 5; i >= 0; i--) {
     const date = dayjs().subtract(i, 'month');
@@ -145,9 +146,9 @@ router.get('/monthly-comparison', async (req, res) => {
   }
 
   res.json(months);
-});
+}));
 
-router.get('/peak-hours', async (req, res) => {
+router.get('/peak-hours', asyncHandler(async (req, res) => {
   const sessions = await prisma.session.findMany({
     include: { bookings: true },
   });
@@ -168,6 +169,6 @@ router.get('/peak-hours', async (req, res) => {
 
   const result = Object.values(hourStats).sort((a, b) => b.bookingCount - a.bookingCount);
   res.json(result);
-});
+}));
 
 module.exports = router;

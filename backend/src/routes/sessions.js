@@ -1,9 +1,10 @@
 const express = require('express');
 const { prisma } = require('../prisma');
 const dayjs = require('dayjs');
+const asyncHandler = require('../utils/asyncHandler');
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+router.get('/', asyncHandler(async (req, res) => {
   const { date, roomId } = req.query;
   const where = {};
   
@@ -20,17 +21,17 @@ router.get('/', async (req, res) => {
     orderBy: [{ sessionDate: 'asc' }, { startTime: 'asc' }],
   });
   res.json(sessions);
-});
+}));
 
-router.get('/templates', async (req, res) => {
+router.get('/templates', asyncHandler(async (req, res) => {
   const templates = await prisma.sessionTemplate.findMany({
     where: { isActive: true },
     include: { room: true },
   });
   res.json(templates);
-});
+}));
 
-router.post('/generate', async (req, res) => {
+router.post('/generate', asyncHandler(async (req, res) => {
   const { startDate, endDate } = req.body;
   const templates = await prisma.sessionTemplate.findMany({ where: { isActive: true } });
   
@@ -73,9 +74,9 @@ router.post('/generate', async (req, res) => {
   }
 
   res.json({ message: `生成了 ${sessions.length} 个场次`, sessions });
-});
+}));
 
-router.post('/:id/npc', async (req, res) => {
+router.post('/:id/npc', asyncHandler(async (req, res) => {
   const { employeeId, role } = req.body;
   const assignment = await prisma.npcAssignment.create({
     data: {
@@ -86,11 +87,11 @@ router.post('/:id/npc', async (req, res) => {
     include: { employee: true },
   });
   res.status(201).json(assignment);
-});
+}));
 
-router.delete('/npc/:id', async (req, res) => {
+router.delete('/npc/:id', asyncHandler(async (req, res) => {
   await prisma.npcAssignment.delete({ where: { id: parseInt(req.params.id) } });
   res.json({ message: '删除成功' });
-});
+}));
 
 module.exports = router;

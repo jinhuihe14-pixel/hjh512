@@ -1,9 +1,10 @@
 const express = require('express');
 const { prisma } = require('../prisma');
 const dayjs = require('dayjs');
+const asyncHandler = require('../utils/asyncHandler');
 const router = express.Router();
 
-router.post('/snack-sale', async (req, res) => {
+router.post('/snack-sale', asyncHandler(async (req, res) => {
   const { shiftId, items } = req.body;
 
   let totalAmount = 0;
@@ -51,9 +52,9 @@ router.post('/snack-sale', async (req, res) => {
   }
 
   res.status(201).json(sale);
-});
+}));
 
-router.get('/snack-sales', async (req, res) => {
+router.get('/snack-sales', asyncHandler(async (req, res) => {
   const { shiftId, startDate, endDate } = req.query;
   const where = {};
   if (shiftId) where.shiftId = parseInt(shiftId);
@@ -71,9 +72,9 @@ router.get('/snack-sales', async (req, res) => {
     take: 100,
   });
   res.json(sales);
-});
+}));
 
-router.get('/today-summary', async (req, res) => {
+router.get('/today-summary', asyncHandler(async (req, res) => {
   const { employeeId } = req.query;
   const today = dayjs().startOf('day').toDate();
   const tomorrow = dayjs().add(1, 'day').startOf('day').toDate();
@@ -120,6 +121,6 @@ router.get('/today-summary', async (req, res) => {
     checkInCount: checkedInBookings.length,
     bookingCount: todayBookings.length,
   });
-});
+}));
 
 module.exports = router;
